@@ -9,13 +9,14 @@ namespace TaskSavushkin.Devices
     class Camera : Device
     {
 
-        public Camera() : base()
-        {
-            addProperty("ip", "");
-            addProperty("port", "");
+        public Camera() : base("Камера")
+        { 
+
+            AddProperty("ip", "");
+            AddProperty("port", "");
         }
 
-        static public string getTypeName()
+        static public string SGetTypeName()
         {
             return ("Камера");
         }

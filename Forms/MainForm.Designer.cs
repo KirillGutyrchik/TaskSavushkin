@@ -1,7 +1,7 @@
 ﻿
 namespace TaskSavushkin
 {
-    partial class Form_main
+    partial class MainForm
     {
         /// <summary>
         /// Обязательная переменная конструктора.
@@ -31,11 +31,9 @@ namespace TaskSavushkin
         {
             this.components = new System.ComponentModel.Container();
             this.dataGridView_Devices = new System.Windows.Forms.DataGridView();
-            this.number = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.type = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.title = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.price = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridView_DevicePropertys = new System.Windows.Forms.DataGridView();
+            this.property = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox_Devices = new System.Windows.Forms.GroupBox();
             this.button_deleteDevice = new System.Windows.Forms.Button();
             this.button_addDevice = new System.Windows.Forms.Button();
@@ -43,8 +41,10 @@ namespace TaskSavushkin
             this.button_deleteDeviceProperty = new System.Windows.Forms.Button();
             this.button_addDeviceProperty = new System.Windows.Forms.Button();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.property = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.value = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.number = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.type = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.title = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.price = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Devices)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_DevicePropertys)).BeginInit();
             this.groupBox_Devices.SuspendLayout();
@@ -66,31 +66,6 @@ namespace TaskSavushkin
             this.dataGridView_Devices.TabIndex = 0;
             this.dataGridView_Devices.SortCompare += new System.Windows.Forms.DataGridViewSortCompareEventHandler(this.dataGridView_Devices_SortCompare);
             // 
-            // number
-            // 
-            this.number.HeaderText = "№";
-            this.number.Name = "number";
-            this.number.ReadOnly = true;
-            this.number.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.number.Width = 50;
-            // 
-            // type
-            // 
-            this.type.HeaderText = "Тип";
-            this.type.Name = "type";
-            this.type.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.type.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            // 
-            // title
-            // 
-            this.title.HeaderText = "Название";
-            this.title.Name = "title";
-            // 
-            // price
-            // 
-            this.price.HeaderText = "цена";
-            this.price.Name = "price";
-            // 
             // dataGridView_DevicePropertys
             // 
             this.dataGridView_DevicePropertys.AllowUserToAddRows = false;
@@ -102,6 +77,16 @@ namespace TaskSavushkin
             this.dataGridView_DevicePropertys.Name = "dataGridView_DevicePropertys";
             this.dataGridView_DevicePropertys.Size = new System.Drawing.Size(503, 246);
             this.dataGridView_DevicePropertys.TabIndex = 1;
+            // 
+            // property
+            // 
+            this.property.HeaderText = "свойсво";
+            this.property.Name = "property";
+            // 
+            // value
+            // 
+            this.value.HeaderText = "значение";
+            this.value.Name = "value";
             // 
             // groupBox_Devices
             // 
@@ -170,24 +155,39 @@ namespace TaskSavushkin
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
             // 
-            // property
+            // number
             // 
-            this.property.HeaderText = "свойсво";
-            this.property.Name = "property";
+            this.number.HeaderText = "№";
+            this.number.Name = "number";
+            this.number.ReadOnly = true;
+            this.number.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.number.Width = 50;
             // 
-            // value
+            // type
             // 
-            this.value.HeaderText = "значение";
-            this.value.Name = "value";
+            this.type.HeaderText = "Тип";
+            this.type.Name = "type";
+            this.type.ReadOnly = true;
+            this.type.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             // 
-            // Form_main
+            // title
+            // 
+            this.title.HeaderText = "Название";
+            this.title.Name = "title";
+            // 
+            // price
+            // 
+            this.price.HeaderText = "цена";
+            this.price.Name = "price";
+            // 
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1064, 581);
             this.Controls.Add(this.groupBox_DevicePropertys);
             this.Controls.Add(this.groupBox_Devices);
-            this.Name = "Form_main";
+            this.Name = "MainForm";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Devices)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_DevicePropertys)).EndInit();
@@ -207,13 +207,13 @@ namespace TaskSavushkin
         private System.Windows.Forms.Button button_deleteDevice;
         private System.Windows.Forms.Button button_addDeviceProperty;
         private System.Windows.Forms.Button button_deleteDeviceProperty;
-        private System.Windows.Forms.DataGridViewTextBoxColumn number;
-        private System.Windows.Forms.DataGridViewComboBoxColumn type;
-        private System.Windows.Forms.DataGridViewTextBoxColumn title;
-        private System.Windows.Forms.DataGridViewTextBoxColumn price;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.DataGridViewTextBoxColumn property;
         private System.Windows.Forms.DataGridViewTextBoxColumn value;
+        private System.Windows.Forms.DataGridViewTextBoxColumn number;
+        private System.Windows.Forms.DataGridViewTextBoxColumn type;
+        private System.Windows.Forms.DataGridViewTextBoxColumn title;
+        private System.Windows.Forms.DataGridViewTextBoxColumn price;
     }
 }
 

@@ -8,13 +8,13 @@ namespace TaskSavushkin.Devices
 {
     class Printer : Device
     {
-        public Printer() : base()
+        public Printer() : base("Принтер")
         {
-            addProperty("ip", "");
-            addProperty("port", "");
+            AddProperty("ip", "");
+            AddProperty("port", "");
         }
 
-        static public string getTypeName()
+        static public string SGetTypeName()
         {
             return ("Принтер");
         }

@@ -48,18 +48,28 @@
   <ItemGroup>
     <Compile Include="Devices\Camera.cs" />
     <Compile Include="Devices\Printer.cs" />
-    <Compile Include="Serializer.cs" />
-    <Compile Include="Devices\IDevice.cs" />
-    <Compile Include="Forms\Form1.cs">
+    <Compile Include="Devices\TableDevices.cs" />
+    <Compile Include="Forms\AddDeviceDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Forms\AddDeviceDialog.Designer.cs">
+      <DependentUpon>AddDeviceDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Serializer.cs" />
+    <Compile Include="Devices\IDevice.cs" />
+    <Compile Include="Forms\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Forms\Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\AddDeviceDialog.resx">
+      <DependentUpon>AddDeviceDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
