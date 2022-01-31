@@ -10,18 +10,21 @@ namespace TaskSavushkin
 {
     public interface IDevice
     {
-        void EditName(string newName);
+        string UINameType { get; }
 
-        void EditPrice(UInt64 newPrice);
+        string ExternalNameType { get; }
 
-        string GetName();
+        double Price { get; set; }
 
-        UInt64 GetPrice();
+        string Name { get; set; }
 
-        string GetTypeName();
+        Dictionary<string, string> DefaultProperties { get; }
+        Dictionary<string,string> Properties { get; }
 
-        void AddProperty(string property, string value);
 
+
+        bool AddOrUpdateProperty(string property, string value);
+        bool RemoveProperty(string property);
     }
 
 
@@ -29,73 +32,101 @@ namespace TaskSavushkin
 
 
     abstract class Device : IDevice
-    {
+    {       
+        private string _UINameType { get; set; }
+        private string _ExternalNameType { get; set; }
 
-        public Device(string type)
+        private string _Name { get; set; }
+        private double _Price { get; set; }
+        private Dictionary<string, string> _DefaultProperties { get; set; }
+        private Dictionary<string, string> _Properties { get; set; }
+
+
+        public string UINameType
         {
-            Type = type;
+            get { return _UINameType; }
+        }
 
-            Properties = new Dictionary<string, string>();
+        public string ExternalNameType
+        {
+            get { return _ExternalNameType; }
+        }
+
+        public string Name 
+        { 
+            get { return _Name; } 
+            set { _Name = value; }
+        }
+
+        public double Price
+        {
+            get { return _Price; }
+            set { _Price = value; }
+        }
+
+        public Dictionary<string, string> DefaultProperties
+        {
+            get { return _DefaultProperties; }
+        }
+
+        public Dictionary<string,string> Properties
+        {
+            get { return _Properties; }
+        }
+
+        public Device(string uiNameType, string externalNameType, Dictionary<string, string> defaultProperties)
+        {
+            _UINameType = uiNameType;
+            _ExternalNameType = externalNameType;
+
+            _DefaultProperties = defaultProperties;
+            _Properties = new Dictionary<string, string>();
         }
 
 
-        public void EditName(string newName)
+
+        public bool AddOrUpdateProperty(string property, string value)
         {
-            Name = newName;
+
+            if (property != null && property != string.Empty)
+            {
+                if (DefaultProperties.ContainsKey(property))
+                {
+                    DefaultProperties[property] = value;
+                }
+                else Properties[property] = value;
+
+                return true;
+            }
+            return false;
         }
 
-        public void EditPrice(UInt64 newPrice)
+        public bool RemoveProperty(string property)
         {
-            Price = newPrice;
+            return _Properties.Remove(property);
         }
 
-        public string GetName()
-        {
-            return Name;
-        }
-
-        public UInt64 GetPrice()
-        {
-            return Price;
-        }
-
-        public string GetTypeName()
-        {
-            return Type;
-        }
-
-        public void AddProperty(string property, string value)
-        {
-            if(Properties.ContainsKey(property) == false) 
-                Properties.Add(property, value);
-        }
-
-
-        public static IDevice getObject(Type type)
+        public static IDevice GetObject(Type type)
         {
             return (IDevice)type.GetConstructor(new Type[] { }).Invoke(new object[] { });
         }
 
-
-        public static Func<string> getMethodTypeName(Type type)
+        public static (string, string) GetUINameType(Type type)
         {
-            var lambda =
+            var constExpression = Expression.Constant(GetObject(type));
+
+            return (Expression.Lambda<Func<string>>(
+                        Expression.PropertyOrField(
+                            constExpression,
+                            "UINameType")
+                    ).Compile()(), 
                     Expression.Lambda<Func<string>>(
-                        Expression.Call(type.GetMethod("SGetTypeName"))
-                    );
-            return lambda.Compile();
+                        Expression.PropertyOrField(
+                            constExpression,
+                            "ExternalNameType")
+                    ).Compile()());
         }
 
-
-
-        //--------------------------------------------------
-        private string Name { get; set; }
-
-        private UInt64 Price { get; set; }
-
-        private string Type { get; set; }
-
-        private Dictionary<string, string> Properties { get; set; }
     }
 
 }

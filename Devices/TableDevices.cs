@@ -8,6 +8,11 @@ namespace TaskSavushkin.Devices
 {
     class TableDevices
     {
+        public ulong CounterID { get; set; }
+
+        public Dictionary<ulong, IDevice> Devices { get; }
+
+        
         public TableDevices()
         {
             Devices = new Dictionary<ulong, IDevice>();
@@ -16,29 +21,29 @@ namespace TaskSavushkin.Devices
 
         public void AddDevice(IDevice device)
         {
-            Devices.Add(++CounterID, device);
+            Devices[++CounterID] = device;
         }
 
-        public bool RemoveDevice(UInt64 ID)
+        public IDevice this[ulong ID]
+        {
+            get => Devices[ID];
+            set => Devices[ID] = value;
+        }
+
+        public bool RemoveDevice(ulong ID)
         {
             return Devices.Remove(ID);
         }
 
-        public void EditName(UInt64 ID, string newName)
+        public void EditName(ulong ID, string newName)
         {
-            Devices[ID].EditName(newName);
+            Devices[ID].Name = newName;
         }
 
-        public void EditPrice(UInt64 ID, UInt64 newPrice)
+        public void EditPrice(ulong ID, ulong newPrice)
         {
-            Devices[ID].EditPrice(newPrice);
+            Devices[ID].Price = newPrice;
         }
 
-
-        //------------------------------------------
-
-        public UInt64 CounterID { get; set; } 
-
-        private Dictionary<UInt64, IDevice> Devices;
     }
 }

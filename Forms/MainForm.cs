@@ -11,46 +11,66 @@ using System.Diagnostics;
 using System.Linq.Expressions;
 using TaskSavushkin.Forms;
 using TaskSavushkin.Devices;
-
+using TaskSavushkin.LoadFromFile;
+using TaskSavushkin.UploadToFile;
 
 namespace TaskSavushkin
 {
-    
+
 
     public partial class MainForm : Form
     {
+        private Dictionary<string, Type> UINameTypeTable;
 
+        private Dictionary<string, Type> ExternalNameTypeTable;
+
+        private TableDevices Devices;
 
 
         public MainForm()
         {
             InitializeComponent();
 
-            TableTypesDevices = new Dictionary<string, Type>();
+            UINameTypeTable = new Dictionary<string, Type>();
+            ExternalNameTypeTable = new Dictionary<string, Type>(); 
             Devices = new TableDevices();
 
 
             var allDeviceTypes = typeof(Device).Assembly.GetTypes().Where(t => t.BaseType == typeof(Device));
             foreach (var type in allDeviceTypes)
             {
-                TableTypesDevices.Add(Device.getMethodTypeName(type)(), type);        
-            }
+                var NamesType = Device.GetUINameType(type);
 
+                UINameTypeTable.Add(NamesType.Item1, type);
+                ExternalNameTypeTable.Add(NamesType.Item2, type);
+            }
         }
 
 
-        private void button_deleteDevice_Click(object sender, EventArgs e)
+        private ulong CurrentDeviceID
+        {
+            get
+            {
+               return (dataGridView_Devices.Rows.Count > 0 
+                       && dataGridView_Devices.CurrentRow.Cells[0].Value != null) ?
+                    ulong.Parse(dataGridView_Devices.CurrentRow.Cells[0].Value.ToString())
+                    : 0;
+            } 
+        }
+
+
+        private void DeleteDevice(object sender, EventArgs e)
         {
             if (dataGridView_Devices.Rows.Count > 0)
             {
-                Devices.RemoveDevice(ulong.Parse(dataGridView_Devices.CurrentRow.Cells[0].Value.ToString()));
+                Devices.RemoveDevice(CurrentDeviceID);
                 dataGridView_Devices.Rows.Remove(dataGridView_Devices.CurrentRow);
             }
         }
 
-        private void button_addDevice_Click(object sender, EventArgs e)
+        private void AddDevice(object sender, EventArgs e)
         {
-            var dialog = new AddDeviceDialog(TableTypesDevices);
+            var dialog = new AddDeviceDialog(UINameTypeTable);
 
 
             if (dialog.ShowDialog() == DialogResult.OK)
@@ -58,33 +78,109 @@ namespace TaskSavushkin
                 Devices.AddDevice(dialog.NewDevice);
 
                 dataGridView_Devices.CurrentCell =
-                    dataGridView_Devices
-                    .Rows[dataGridView_Devices.Rows.Add()]
-                    .Cells[2];
+                   dataGridView_Devices
+                   .Rows[dataGridView_Devices.Rows.Add(Devices.CounterID,
+                                                       dialog.NewDevice.UINameType,
+                                                       dialog.NewDevice.Name,
+                                                       dialog.NewDevice.Price)]
+                   .Cells[2];
 
-                dataGridView_Devices.CurrentRow.Cells[0].Value = Devices.CounterID;
-                dataGridView_Devices.CurrentRow.Cells[1].Value = dialog.NewDevice.GetTypeName();
-                dataGridView_Devices.CurrentRow.Cells[2].Value = dialog.NewDevice.GetName();
-                dataGridView_Devices.CurrentRow.Cells[3].Value = dialog.NewDevice.GetPrice();
+                SelectedDevice(null,  new DataGridViewCellEventArgs(0,0));
+            }
+        }
+
+        private void DeviceSortCompare(object sender, DataGridViewSortCompareEventArgs e)
+        {
+            if (e.Column.Name == "price")
+            {
+                e.SortResult = double.Parse(e.CellValue1.ToString())
+                               .CompareTo(double.Parse(e.CellValue2.ToString()));
+                e.Handled = true;
+            }
+            else if (e.Column.Name == "number")
+            {
+                e.SortResult = ulong.Parse(e.CellValue1.ToString())
+                               .CompareTo(ulong.Parse(e.CellValue2.ToString()));
             }
 
 
+
         }
 
-        private void dataGridView_Devices_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
+        private void AddDeviceProperty(object sender, EventArgs e)
         {
-            e.SortResult = uint.Parse(e.CellValue1.ToString())
-                           .CompareTo(uint.Parse(e.CellValue2.ToString()));
-            e.Handled = true;
+            if (dataGridView_Devices.Rows.Count > 0)
+            {
+                dataGridView_DevicePropertys.CurrentCell =
+                    dataGridView_DevicePropertys.Rows[dataGridView_DevicePropertys.Rows.Add()]
+                    .Cells[0];
+
+                dataGridView_DevicePropertys.CurrentCell.ReadOnly = false;
+            }
         }
 
+        private void PropertyChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex != -1)
+            {
+                Devices[CurrentDeviceID]
+                        .AddOrUpdateProperty(
+                            dataGridView_DevicePropertys.Rows[e.RowIndex].Cells[0].Value?.ToString(),
+                            dataGridView_DevicePropertys.Rows[e.RowIndex].Cells[1].Value?.ToString()
+                            );
 
+                if (e.ColumnIndex == 0)
+                    dataGridView_DevicePropertys.CurrentCell.ReadOnly = true;
+            }
+        }
 
+        private void DeleteDeviceProperty(object sender, EventArgs e)
+        {
+            if(dataGridView_DevicePropertys.Rows.Count > 0)
+            {
+                if (Devices[CurrentDeviceID]
+                    .RemoveProperty(dataGridView_DevicePropertys.CurrentRow.Cells[0].Value.ToString()))
+                {
+                    dataGridView_DevicePropertys.Rows.Remove(dataGridView_DevicePropertys.CurrentRow);
+                }
+            }
 
-        private Dictionary<string, Type> TableTypesDevices;
+        }
 
+        
+        private void SelectedDevice(object sender, EventArgs e)
+        {
+            if (dataGridView_Devices.Rows.Count > 0)
+            {
+                dataGridView_DevicePropertys.Rows.Clear();
 
-        private TableDevices Devices;
-       
+                foreach (var property in Devices[CurrentDeviceID].DefaultProperties)
+                {
+                    dataGridView_DevicePropertys.Rows.Add(property.Key, property.Value);
+                }
+
+                foreach (var property in Devices[CurrentDeviceID].Properties)
+                {
+                    dataGridView_DevicePropertys.Rows.Add(property.Key, property.Value);
+                }
+            }
+        }
+
+        private void LoadInLua(object sender, EventArgs e)
+        {
+            new UploadToLua(Devices);
+        }
+
+        private void ExportFromLua(object sender, EventArgs e)
+        {
+            foreach(var device in new LoadFromLua(ExternalNameTypeTable).Result())
+            {
+                Devices.AddDevice(device);
+                dataGridView_Devices.Rows.Add(Devices.CounterID,
+                                              device.UINameType,
+                                              device.Name,
+                                              device.Price);
+            }
+        }
     }
 }
